@@ -8,9 +8,9 @@ import SignUpScreen from "../screens/SignUpScreen";
 
 const AuthStack = createStackNavigator();
 
-const AuthStackScreen = ({navigation}) => {
+const AuthStackScreens = ({navigation}) => {
     return (
-        <AuthStack.Navigator headerMode={"none"}>
+        <AuthStack.Navigator headerMode={"none"} initialRouteName={SplashScreen}>
             <AuthStack.Screen name={"SplashScreen"} component={SplashScreen}/>
             <AuthStack.Screen name={"SignInScreen"} component={SignInScreen}/>
             <AuthStack.Screen name={"SignUpScreen"} component={SignUpScreen}/>
@@ -18,4 +18,4 @@ const AuthStackScreen = ({navigation}) => {
     );
 };
 
-export default AuthStackScreen;
+export default AuthStackScreens;
