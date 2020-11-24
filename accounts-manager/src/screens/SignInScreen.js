@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Text} from "react-native-elements";
-import {View, StyleSheet, StatusBar, TouchableOpacity, TextInput} from "react-native";
+import {View, StyleSheet, StatusBar, TouchableOpacity, TextInput, ActivityIndicator} from "react-native";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from "react-native-animatable";
@@ -16,11 +16,12 @@ const SignInScreen = ({navigation}) => {
         checkTextInputChange: false,
         secureTextEntry: true
     });
-    let responseData = {
-            id: 0,
-            token: null,
-            token_type: null
-        };
+    const [loading, setLoading] = useState(false);
+    const [responseData, setResponseData] = useState({
+        id: 0,
+        token: null,
+        token_type: null
+    });
 
     const textInputChange = (val) => {
         if (val.length !== 0) {
@@ -53,17 +54,18 @@ const SignInScreen = ({navigation}) => {
     };
 
     const userLogin = async () => {
+        setLoading(true);
         const response = await getLoginToken(data.name, data.password);
         if (response.ok) {
-            console.log(response.data);
-            responseData.id = response.data.id;
-            responseData.token = response.data.token;
-            responseData.token_type = response.data.token_type;
+            setResponseData({
+                id: response.data.id,
+                token: response.data.token,
+                token_type: response.data.token_type
+            })
+        } else {
+            alert("Wrong User Credentials!");
         }
-        else
-        {
-            alert("User credentials not correct!");
-        }
+        setLoading(false);
     };
 
     return (
@@ -138,13 +140,18 @@ const SignInScreen = ({navigation}) => {
                             <View>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        userLogin;
-                                        if(responseData.id!==0 && responseData.token!==null && responseData.token_type!==null)
-                                        {
+                                        userLogin();
+
+                                        if (responseData.id !== 0 && responseData.token !== null && responseData.token_type !== null) {
                                             auth.setCurrentAdmin(responseData.id);
                                             auth.setToken(responseData.token);
                                             auth.setTokenType(responseData.token_type);
                                             auth.setIsLoggedIn(true);
+                                            console.log(auth.isLoggedIn);
+                                        }
+                                        else
+                                        {
+                                            alert("Something went wrong!");
                                         }
                                     }
                                     }
@@ -155,6 +162,8 @@ const SignInScreen = ({navigation}) => {
                                         <Text style={styles.textSign}>Sign In</Text>
                                     </LinearGradient>
                                 </TouchableOpacity>
+
+                                <ActivityIndicator size={"small"} color={"blue"} animating={loading}/>
 
                             </View>
 
