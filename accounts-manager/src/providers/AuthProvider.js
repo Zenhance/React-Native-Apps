@@ -6,6 +6,7 @@ const AuthProvider = (props) => {
     const [currentAdmin,setCurrentAdmin] = useState({});
     const [isLoggedIn,setIsLoggedIn] = useState(false);
     const [token,setToken] = useState(null);
+    const [tokenType,setTokenType] = useState(null);
 
     return(
         <AuthContext.Provider value={{
@@ -14,7 +15,9 @@ const AuthProvider = (props) => {
             isLoggedIn: isLoggedIn,
             setIsLoggedIn:setIsLoggedIn,
             token:token,
-            setToken:setToken
+            setToken:setToken,
+            tokenType:tokenType,
+            setTokenType:setTokenType
         }}>
             {props.children}
         </AuthContext.Provider>

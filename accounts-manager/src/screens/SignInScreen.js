@@ -1,32 +1,38 @@
-import React from "react";
-import {Text, Button, Image} from "react-native-elements";
+import React, {useState} from "react";
+import {Text} from "react-native-elements";
 import {View, StyleSheet, StatusBar, TouchableOpacity, TextInput} from "react-native";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from "react-native-animatable";
 import {LinearGradient} from "expo-linear-gradient";
 import {AuthContext} from "../providers/AuthProvider";
+import {getLoginToken} from "../requests/LoginRequest";
 
 const SignInScreen = ({navigation}) => {
 
-    const [data, setData] = React.useState({
-        email: '',
+    const [data, setData] = useState({
+        name: '',
         password: '',
         checkTextInputChange: false,
         secureTextEntry: true
     });
+    let responseData = {
+            id: 0,
+            token: null,
+            token_type: null
+        };
 
     const textInputChange = (val) => {
         if (val.length !== 0) {
             setData({
                 ...data,
-                email: val,
+                name: val,
                 checkTextInputChange: true
             })
         } else {
             setData({
                 ...data,
-                email: val,
+                name: val,
                 checkTextInputChange: false
             })
         }
@@ -46,6 +52,20 @@ const SignInScreen = ({navigation}) => {
         });
     };
 
+    const userLogin = async () => {
+        const response = await getLoginToken(data.name, data.password);
+        if (response.ok) {
+            console.log(response.data);
+            responseData.id = response.data.id;
+            responseData.token = response.data.token;
+            responseData.token_type = response.data.token_type;
+        }
+        else
+        {
+            alert("User credentials not correct!");
+        }
+    };
+
     return (
         <AuthContext.Consumer>
             {
@@ -59,14 +79,14 @@ const SignInScreen = ({navigation}) => {
                             animation={"fadeInUpBig"}
                             style={styles.footer}
                         >
-                            <Text style={styles.text_footer}>Email</Text>
+                            <Text style={styles.text_footer}>Username</Text>
                             <View style={styles.action}>
                                 <FontAwesomeIcon name={"user"}
                                                  color={"#05375a"}
                                                  size={20}
                                 />
                                 <TextInput
-                                    placeholder={"Your Email"}
+                                    placeholder={"Username"}
                                     style={styles.textInput}
                                     autoCapitalize={"none"}
                                     onChangeText={(val) => {
@@ -94,7 +114,7 @@ const SignInScreen = ({navigation}) => {
                                 />
                                 <TextInput
                                     placeholder={"Your Password"}
-                                    secureTextEntry={data.secureTextEntry ? true : false}
+                                    secureTextEntry={data.secureTextEntry}
                                     style={styles.textInput}
                                     autoCapitalize={"none"}
                                     onChangeText={(val) => handlePasswordChange(val)}
@@ -116,7 +136,20 @@ const SignInScreen = ({navigation}) => {
                             </View>
 
                             <View>
-                                <TouchableOpacity onPress={()=> {auth.setIsLoggedIn(true)}} style={styles.button}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        userLogin;
+                                        if(responseData.id!==0 && responseData.token!==null && responseData.token_type!==null)
+                                        {
+                                            auth.setCurrentAdmin(responseData.id);
+                                            auth.setToken(responseData.token);
+                                            auth.setTokenType(responseData.token_type);
+                                            auth.setIsLoggedIn(true);
+                                        }
+                                    }
+                                    }
+                                    style={styles.button}
+                                >
                                     <LinearGradient colors={["#08D4C4", "#01AB9D"]}
                                                     style={styles.signIn}>
                                         <Text style={styles.textSign}>Sign In</Text>
@@ -178,7 +211,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         flex: 1,
-        marginTop: Platform.OS === 'ios' ? 0 : -12,
+        //marginTop: Platform.OS === 'ios' ? 0 : -12,
         paddingLeft: 10,
         color: '#05375a',
     },
