@@ -8,7 +8,7 @@ import {LinearGradient} from "expo-linear-gradient";
 import {AuthContext} from "../providers/AuthProvider";
 import {getLoginToken} from "../requests/LoginRequest";
 
-const SignInScreen = ({navigation}) => {
+const SignInScreen = () => {
 
     const [data, setData] = useState({
         name: '',
@@ -19,8 +19,7 @@ const SignInScreen = ({navigation}) => {
     const [loading, setLoading] = useState(false);
     const [responseData, setResponseData] = useState({
         id: 0,
-        token: null,
-        token_type: null
+        token: null
     });
 
     const textInputChange = (val) => {
@@ -59,9 +58,9 @@ const SignInScreen = ({navigation}) => {
         if (response.ok) {
             setResponseData({
                 id: response.data.id,
-                token: response.data.token,
-                token_type: response.data.token_type
+                token: response.data.token
             })
+            console.log(responseData);
         } else {
             alert("Wrong User Credentials!");
         }
@@ -141,13 +140,11 @@ const SignInScreen = ({navigation}) => {
                                 <TouchableOpacity
                                     onPress={() => {
                                         userLogin();
-
-                                        if (responseData.id !== 0 && responseData.token !== null && responseData.token_type !== null) {
+                                        if (responseData.id !== 0 && responseData.token !== null ) {
                                             auth.setCurrentAdmin(responseData.id);
                                             auth.setToken(responseData.token);
-                                            auth.setTokenType(responseData.token_type);
                                             auth.setIsLoggedIn(true);
-                                            console.log(auth.isLoggedIn);
+                                            console.log(responseData);
                                         }
                                         else
                                         {

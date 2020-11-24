@@ -1,7 +1,7 @@
 import {AzureClient} from "../clients/AzureClient";
 
-const Logout = (token_type,token) => {
-    return AzureClient.post("/api/logout",{},{headers:{'Authentication':token_type+" "+token}})
+const Logout = (token) => {
+    return AzureClient.post("/api/logout",{},{headers:{'Authorization':"Bearer "+token}})
 };
 
 export {Logout};

@@ -1,11 +1,25 @@
-import React from "react";
+import React,{useState} from "react";
 import {View, Text, StyleSheet, Button} from "react-native";
 import {AuthContext} from "../providers/AuthProvider";
 import {Logout} from "../requests/LogoutRequest";
 
-const HomeScreen = (props) => {
+const HomeScreen = () => {
 
+    const [status,setStatus] = useState(null);
 
+    const userLogOut = async (token) => {
+        const response = await Logout(token);
+        console.log(response.data);
+        if(response.ok && response.data.status==="success")
+        {
+            setStatus(response.data.status);
+            console.log(status);
+        }
+        else
+        {
+            alert("Token Manipulated!");
+        }
+    };
 
     return (
         <AuthContext.Consumer>
@@ -16,8 +30,17 @@ const HomeScreen = (props) => {
                         <Button
                             title={"Log Out"}
                             onPress={() => {
-                                Logout();
-
+                                userLogOut(auth.token);
+                                if(status==="success")
+                                {
+                                    auth.setCurrentAdmin(0);
+                                    auth.setToken(null);
+                                    auth.setIsLoggedIn(false);
+                                }
+                                else
+                                {
+                                    alert("Something Went Wrong!");
+                                }
                             }}
                         />
 

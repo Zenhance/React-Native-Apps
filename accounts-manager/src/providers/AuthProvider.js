@@ -15,9 +15,7 @@ const AuthProvider = (props) => {
             isLoggedIn: isLoggedIn,
             setIsLoggedIn:setIsLoggedIn,
             token:token,
-            setToken:setToken,
-            tokenType:tokenType,
-            setTokenType:setTokenType
+            setToken:setToken
         }}>
             {props.children}
         </AuthContext.Provider>
