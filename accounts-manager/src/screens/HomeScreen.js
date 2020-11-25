@@ -5,22 +5,6 @@ import {Logout} from "../requests/LogoutRequest";
 
 const HomeScreen = () => {
 
-    const [status,setStatus] = useState(null);
-
-    const userLogOut = async (token) => {
-        const response = await Logout(token);
-        console.log(response.data);
-        if(response.ok && response.data.status==="success")
-        {
-            setStatus(response.data.status);
-            console.log(status);
-        }
-        else
-        {
-            alert("Token Manipulated!");
-        }
-    };
-
     return (
         <AuthContext.Consumer>
             {
@@ -29,18 +13,21 @@ const HomeScreen = () => {
                         <Text>Logged In</Text>
                         <Button
                             title={"Log Out"}
-                            onPress={() => {
-                                userLogOut(auth.token);
-                                if(status==="success")
-                                {
-                                    auth.setCurrentAdmin(0);
-                                    auth.setToken(null);
-                                    auth.setIsLoggedIn(false);
-                                }
-                                else
-                                {
-                                    alert("Something Went Wrong!");
-                                }
+                            onPress={async () => {
+                                await Logout(auth.token).then((response) => {
+                                    if(response.ok && response.data.status==="success")
+                                    {
+                                        console.log(response.data);
+                                        auth.setIsLoggedIn(false);
+                                        auth.setToken(null);
+                                        auth.setCurrentAdmin(0);
+                                    }
+                                    else
+                                    {
+                                        alert("Token Manipulated!");
+                                    }
+                                });
+
                             }}
                         />
 

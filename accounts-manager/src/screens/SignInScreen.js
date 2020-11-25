@@ -52,20 +52,20 @@ const SignInScreen = () => {
         });
     };
 
-    const userLogin = async () => {
-        setLoading(true);
-        const response = await getLoginToken(data.name, data.password);
-        if (response.ok) {
-            setResponseData({
-                id: response.data.id,
-                token: response.data.token
-            })
-            console.log(responseData);
-        } else {
-            alert("Wrong User Credentials!");
-        }
-        setLoading(false);
-    };
+    // const userLogin = async () => {
+    //     setLoading(true);
+    //     const response = await getLoginToken(data.name, data.password);
+    //     if (response.ok) {
+    //         setResponseData({
+    //             id: response.data.id,
+    //             token: response.data.token
+    //         })
+    //         console.log(responseData);
+    //     } else {
+    //         alert("Wrong User Credentials!");
+    //     }
+    //     setLoading(false);
+    // };
 
     return (
         <AuthContext.Consumer>
@@ -138,18 +138,20 @@ const SignInScreen = () => {
 
                             <View>
                                 <TouchableOpacity
-                                    onPress={() => {
-                                        userLogin();
-                                        if (responseData.id !== 0 && responseData.token !== null ) {
-                                            auth.setCurrentAdmin(responseData.id);
-                                            auth.setToken(responseData.token);
-                                            auth.setIsLoggedIn(true);
-                                            console.log(responseData);
-                                        }
-                                        else
-                                        {
-                                            alert("Something went wrong!");
-                                        }
+                                    onPress={async () => {
+                                        setLoading(true);
+                                        await getLoginToken(data.name, data.password).then((response)=> {
+                                            if (response.ok) {
+                                                auth.setCurrentAdmin(response.data.id);
+                                                auth.setToken(response.data.token);
+                                                auth.setIsLoggedIn(true);
+                                                console.log(response.data);
+                                            } else {
+                                                alert("Wrong User Credentials!");
+                                                setLoading(false);
+                                            }
+                                        })
+                                        setLoading(false);
                                     }
                                     }
                                     style={styles.button}
